@@ -696,16 +696,15 @@ qtlRunSegmentation <- function(rnb.set,
 				out.folder,
 				train.chr="chr2"){
   if(qtlGetOption("use.segmentation")){
-     logger.info("The segmenation function is not available through the Bioconductor version of the package. Please see the branch withPMDs on GitHub (https://github.com/MPIIComputationalEpigenetics/MAGAR)")
-#    if(requireNamespace("epicPMDdetect")){
-#      logger.start("Start segmentation")
-#      gr <- epicPMDdetect::buildMethGrangesFromRnbSet(rnb.set)
-#      segmentation <- epicPMDdetect::segmentPMDsKNN(gr,training.chr.sel=train.chr)
-#      segmentation <- segmentation[values(segmentation)$type%in%c("PMD","notPMD")]
-#      logger.completed()
-#    }else{
-#      stop("Please install the 'epicPMDdetect' package, which is required for computing segmentations")
-#    }
+    if(requireNamespace("epicPMDdetect")){
+      logger.start("Start segmentation")
+      gr <- epicPMDdetect::buildMethGrangesFromRnbSet(rnb.set)
+      segmentation <- epicPMDdetect::segmentPMDsKNN(gr,training.chr.sel=train.chr)
+      segmentation <- segmentation[values(segmentation)$type%in%c("PMD","notPMD")]
+      logger.completed()
+    }else{
+      stop("Please install the 'epicPMDdetect' package, which is required for computing segmentations")
+    }
   }else{
     segmentation <- NULL
   }

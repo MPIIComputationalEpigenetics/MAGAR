@@ -183,53 +183,51 @@ qtlTFBSMotifEnrichment <- function(meth.qtl.res,
 	subsample=100000,
 	out.dir=getwd(),
 	...){
-   logger.warning("The motifRG package is currently not supported by Bioconductor")
-#  if(!assembly%in%c("hg19","hg38")){
-#    stop("Motif enrichment only supported for 'hg19' and 'hg38'")
-#  }
-#  if(requireNamespace("motifRG")&requireNamespace("TFBSTools")&requireNamespace("JASPAR2018")){
-#    stats <- getOverlapUniverse(meth.qtl.res,type)
-#    all.input <- stats$all.input
-#    all.input <- resize(all.input,width=size,fix="center")
-#    all.qtl <- stats$all.qtl
-#    all.qtl <- resize(all.qtl,width=size,fix="center")
-#    if(assembly%in%"hg19"){
-#	all.input <- getSeq(BSgenome.Hsapiens.UCSC.hg19, all.input)
-#	all.qtl <- getSeq(BSgenome.Hsapiens.UCSC.hg19, all.qtl)
-#    }else{
-#	all.input <- getSeq(BSgenome.Hsapiens.UCSC.hg38, all.input)
-#	all.qtl <- getSeq(BSgenome.Hsapiens.UCSC.hg38, all.qtl)
-#    }
-#    all.input <- all.input[sample(1:length(all.input),subsample)]
-#    motifs <- findMotifFgBg(
-#      fg.seq = all.qtl,
-#      bg.seq = all.input,
-#      ...
-#    )
-#    refined.motifs = lapply(motifs$motifs, function(x){
-#      refinePWMMotifExtend(motifs = x@match$pattern, seqs = all.qtl)
-#    })
-#    for(i in 1:length(refined.motifs)){
-#      mot <- refined.motifs[[i]]
-#      motif.name <- names(refined.motifs)[i]
-#      pwm.mot <- PWMatrix(ID='unk',
-#			profileMatrix=mot$model$prob)
-#      pwm.mot.lib <- getMatrixSet(
-#			JASPAR2018,
-#			opts=list(collection="CORE",species="Homo sapiens",matrixtype="PWM")
-#		)
-#      pwm.mot.sim <- PWMSimilarity(pwm.mot.lib,pwm.mot,method="Pearson")
-#      info.mat <- t(as.data.frame(lapply(pwm.mot.lib,function(x){
-#         c(ID(x),name(x))
-#      })))
-#      info.mat <- data.frame(info.mat,similarity=pwm.mot.sim[info.mat[,1]])
-#      info.mat <- info.mat[order(info.mat$similarity,decreasing=T),]
-#      pdf(file.path(out.dir,paste0(motif.name,".pdf")))
-#      plot.new()
-#      seqLogo::seqLogo(mot$model$prob)
-#      text(x=0.5,y=1,label=paste("Most similar to",info.mat$X2[1],"Similarity:",round(info.mat$similarity[1],3)))
-#      dev.off()
-#    }
-    return(NULL)
-#  }
+  if(!assembly%in%c("hg19","hg38")){
+    stop("Motif enrichment only supported for 'hg19' and 'hg38'")
+  }
+  if(requireNamespace("motifRG")&requireNamespace("TFBSTools")&requireNamespace("JASPAR2018")){
+    stats <- getOverlapUniverse(meth.qtl.res,type)
+    all.input <- stats$all.input
+    all.input <- resize(all.input,width=size,fix="center")
+    all.qtl <- stats$all.qtl
+    all.qtl <- resize(all.qtl,width=size,fix="center")
+    if(assembly%in%"hg19"){
+	all.input <- getSeq(BSgenome.Hsapiens.UCSC.hg19, all.input)
+	all.qtl <- getSeq(BSgenome.Hsapiens.UCSC.hg19, all.qtl)
+    }else{
+	all.input <- getSeq(BSgenome.Hsapiens.UCSC.hg38, all.input)
+	all.qtl <- getSeq(BSgenome.Hsapiens.UCSC.hg38, all.qtl)
+    }
+    all.input <- all.input[sample(1:length(all.input),subsample)]
+    motifs <- findMotifFgBg(
+      fg.seq = all.qtl,
+      bg.seq = all.input,
+      ...
+    )
+    refined.motifs = lapply(motifs$motifs, function(x){
+      refinePWMMotifExtend(motifs = x@match$pattern, seqs = all.qtl)
+    })
+    for(i in 1:length(refined.motifs)){
+      mot <- refined.motifs[[i]]
+      motif.name <- names(refined.motifs)[i]
+      pwm.mot <- PWMatrix(ID='unk',
+			profileMatrix=mot$model$prob)
+      pwm.mot.lib <- getMatrixSet(
+			JASPAR2018,
+			opts=list(collection="CORE",species="Homo sapiens",matrixtype="PWM")
+		)
+      pwm.mot.sim <- PWMSimilarity(pwm.mot.lib,pwm.mot,method="Pearson")
+      info.mat <- t(as.data.frame(lapply(pwm.mot.lib,function(x){
+         c(ID(x),name(x))
+      })))
+      info.mat <- data.frame(info.mat,similarity=pwm.mot.sim[info.mat[,1]])
+      info.mat <- info.mat[order(info.mat$similarity,decreasing=T),]
+      pdf(file.path(out.dir,paste0(motif.name,".pdf")))
+      plot.new()
+      seqLogo::seqLogo(mot$model$prob)
+      text(x=0.5,y=1,label=paste("Most similar to",info.mat$X2[1],"Similarity:",round(info.mat$similarity[1],3)))
+      dev.off()
+    }
+  }
 }
